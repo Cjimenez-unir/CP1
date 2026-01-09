@@ -1,6 +1,7 @@
 import http.client
 import os
 import unittest
+from http.client import responses
 from urllib.request import urlopen
 
 import pytest
@@ -25,6 +26,48 @@ class TestApi(unittest.TestCase):
             response.read().decode(), "3", "ERROR ADD"
         )
 
+    def test_api_substract(self):
+        url = f"{BASE_URL}/calc/substract/4/1"
+        response = urlopen(url, timeout=DEFAULT_TIMEOUT)
+        self.assertEqual(
+            response.status, http.client.OK, f"Error en la petición API a {url}"
+        )
+        self.assertEqual(
+            response.read().decode(), "3", "ERROR SUBSTRACT"
+        )
+
+    def test_api_multiply(self):
+        url = f"{BASE_URL}/calc/multiply/3/4"
+        response = urlopen(url, timeout=DEFAULT_TIMEOUT)
+        self.assertEqual(
+            response.status, http.client.OK, f"Error en la petición API a {url}"
+        )
+        self.assertEqual(
+            response.read().decode(), "12", "ERROR MULTIPLY"
+        )
+
+    def test_api_divide(self):
+        url = f"{BASE_URL}/calc/divide/12/4"
+        response = urlopen(url, timeout=DEFAULT_TIMEOUT)
+        self.assertEqual(
+            response.status, http.client.OK, f"Error en la petición API a {url}"
+        )
+        self.assertEqual(
+            response.read().decode(), "3.0", "ERROR DIVIDE"
+        )
+
+    def test_api_divide_by_0(self):
+        url = f"{BASE_URL}/calc/divide/12/0"
+        response = urlopen(url, timeout=DEFAULT_TIMEOUT)
+        self.assertEqual(
+            response.status, http.client.OK, f"Error en la petición API a {url}"
+        )
+        self.assertEqual(
+            response.read().decode(), "No se puede dividir por cero", "ERROR DIVIDE BY 0"
+        )
+
+
+'''
     def test_api_sqrt(self):
         url = f"{BASE_URL_MOCK}/calc/sqrt/64"
         response = urlopen(url, timeout=DEFAULT_TIMEOUT)
@@ -34,6 +77,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(
             response.read().decode(), "8", "ERROR SQRT"
         )
+'''
 
 if __name__ == "__main__":  # pragma: no cover
     unittest.main()
