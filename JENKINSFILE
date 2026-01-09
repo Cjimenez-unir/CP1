@@ -51,6 +51,7 @@ pipeline
 								start flask run
 								start java -jar C:\\Users\\falua\\Documents\\Unir\\MasterDevOps\\wiremock\\wiremock-standalone-3.13.2.jar --port 9090 --root-dir test\\wiremock
 								set PYTHONPATH=%WORKSPACE%
+								ping -n 10 127.0.0.1
 								pytest --junitxml=result-rest.xml test\\rest
 							'''
 						}
