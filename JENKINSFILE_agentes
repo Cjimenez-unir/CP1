@@ -2,6 +2,8 @@ pipeline
 {
     agent any
 
+    options { skipDefaultCheckout() }
+    
     stages
     {
         stage('Get Code')
@@ -10,6 +12,7 @@ pipeline
             {
                 //Obtener código del repo
                 git 'https://github.com/Cjimenez-unir/CP1.git'
+                stash name:'code', includes:'**'
             }
         }
         
@@ -29,13 +32,17 @@ pipeline
             {
                 stage('Unit')
                 {
+                    agent {label 'agent1'}
                     steps
                     {
-                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE')
+                        {
+                            unstash name:'code'
                             bat '''
                                 set PYTHONPATH=%WORKSPACE%
                                 pytest --junitxml=result-unit.xml test\\unit
                             '''
+                            stash name: 'results-unit', includes: 'result-unit.xml'
                         }
                     }
                 }
@@ -46,14 +53,15 @@ pipeline
                     {
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE')
                         {
+                            unstash name:'code'
                             bat '''
                                 set FLASK_APP=app\\api.py
                                 start flask run
                                 start java -jar C:\\Users\\falua\\Documents\\Unir\\MasterDevOps\\wiremock\\wiremock-standalone-3.13.2.jar --port 9090 --root-dir test\\wiremock
                                 set PYTHONPATH=%WORKSPACE%
-                                ping -n 10 127.0.0.1
                                 pytest --junitxml=result-rest.xml test\\rest
                             '''
+                            stash name: 'results-rest', includes: 'result-rest.xml'
                         }
                     }
                 }
@@ -64,6 +72,8 @@ pipeline
         {
             steps
             {
+                unstash name:'results-unit'
+                unstash name:'results-rest'
                 junit 'result*.xml'
             }
         }
