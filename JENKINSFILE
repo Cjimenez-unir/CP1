@@ -1,9 +1,7 @@
 pipeline
 {
     agent any
-    environment {
-        PATH = "C:\\Python\\Python314;C:\\Python\\Python314\\Scripts;${env.PATH}"
-    }
+
     stages
     {
         stage('Get Code')
