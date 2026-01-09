@@ -46,13 +46,16 @@ pipeline
                 {
                     steps
                     {
-                        bat '''
-                            set FLASK_APP=app\\api.py
-                            start flask run
-                            start java -jar C:\\Users\\falua\\Documents\\Unir\\MasterDevOps\\wiremock\\wiremock-standalone-3.13.2.jar --port 9090 --root-dir test\\wiremock
-                            set PYTHONPATH=%WORKSPACE%
-                            pytest --junitxml=result-rest.xml test\\rest
-                        '''
+                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE')
+						{
+							bat '''
+								set FLASK_APP=app\\api.py
+								start flask run
+								start java -jar C:\\Users\\falua\\Documents\\Unir\\MasterDevOps\\wiremock\\wiremock-standalone-3.13.2.jar --port 9090 --root-dir test\\wiremock
+								set PYTHONPATH=%WORKSPACE%
+								pytest --junitxml=result-rest.xml test\\rest
+							'''
+						}
                     }
                 }
             }
